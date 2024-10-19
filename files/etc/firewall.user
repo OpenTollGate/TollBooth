@@ -1,0 +1,16 @@
+#!/bin/sh
+
+iptables -F
+iptables -t nat -F
+
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -P OUTPUT ACCEPT
+
+iptables -N tollbooth
+
+iptables -A FORWARD -i br-lan -j tollbooth
+
+iptables -t nat -A PREROUTING -i br-lan -p tcp --dport 80 -j DNAT --to-destination 192.168.1.1
+
+iptables -A tollbooth -j DROP
