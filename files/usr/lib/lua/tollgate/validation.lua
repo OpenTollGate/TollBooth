@@ -1,15 +1,17 @@
 -- validation.lua
 
 local validation = {}
+local cjson = require "cjson"
 
 -- Configuration parameters (customizable)
-validation.SESSION_TIMEOUT = 3600  -- Session timeout in seconds
+-- validation.SESSION_TIMEOUT = 3600  -- Session timeout in seconds
 
 -- Session storage (in-memory)
 local sessions = {}
 
 -- User validation logic
 function validation.validate_user(data)
+
     -- Implement your custom validation logic here
     if data.username == "allowed_user" and data.password == "correct_password" then
         return true, "Access granted"

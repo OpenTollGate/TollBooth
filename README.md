@@ -1,7 +1,11 @@
-# install
+# tollbooth
+
+## build
 ```bash
-opkg update
-opkg install captiveportal
+make
 ```
 
-# usage 
+## todo 
+- [ ] Runs
+- [ ] Package Installs
+- [ ] Package Uninstalls
