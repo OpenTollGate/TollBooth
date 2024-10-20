@@ -1,16 +1,3 @@
-include $(TOPDIR)/rules.mk
-
-PKG_NAME:=tollbooth
-PKG_VERSION:=0.1.0
-PKG_RELEASE:=1
-
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/OpenTollGate/TollBooth.git
-PKG_SOURCE_VERSION:=main
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
@@ -26,9 +13,18 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Prepare
-  mkdir -p $(PKG_BUILD_DIR)
-  cp -r ./files/* $(PKG_BUILD_DIR)/
+	rm -rf $(PKG_BUILD_DIR)
+	mkdir -p $(PKG_BUILD_DIR)
+	git clone $(PKG_SOURCE_URL) $(PKG_BUILD_DIR) --branch $(PKG_SOURCE_VERSION) --single-branch
+	(cd $(PKG_BUILD_DIR); git submodule update --init --recursive)
+	[ -d "$(PKG_BUILD_DIR)/nostr/c" ] && $(CP) $(PKG_BUILD_DIR)/nostr/c/* $(PKG_BUILD_DIR)/ || (echo "The expected subdirectory does not exist." && exit 1)
+	[ -f "$(PKG_BUILD_DIR)/generate_config_h.sh" ] && (cd $(PKG_BUILD_DIR); ./generate_config_h.sh)
 endef
+
+# define Build/Prepare
+#   mkdir -p $(PKG_BUILD_DIR)
+#   cp -r ./files/* $(PKG_BUILD_DIR)/
+# endef
 
 define Build/Compile
 endef
@@ -36,11 +32,9 @@ endef
 define Package/$(PKG_NAME)/install
   $(INSTALL_DIR) $(1)/usr/lib/lua/tollbooth
   $(INSTALL_BIN) $(PKG_BUILD_DIR)/usr/lib/lua/tollbooth/*.lua $(1)/usr/lib/lua/tollbooth/
-
 endef
 
 define Package/$(PKG_NAME)/postinst
-
 if ! uci get uhttpd.main > /dev/null 2>&1; then
     uci set uhttpd.main=uhttpd
 fi
