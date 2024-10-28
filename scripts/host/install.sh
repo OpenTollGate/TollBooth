@@ -5,7 +5,7 @@ cd openwrt
 make package/custom/tollbooth-backend/compile V=s
 
 # Transfer package to router
-scp bin/packages/<arch>/tollbooth-backend_1.0.0-1_<arch>.ipk rot@<router_ip>:/tmp/
+scp bin/packages/<arch>/tollbooth-backend_1.0.0-1_<arch>.ipk root@<router_ip>:/tmp/
 
 # SSH into the router and install
 ssh root@<router_ip>
